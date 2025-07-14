@@ -11,6 +11,9 @@ from dataclasses import dataclass
 from src.components.data_transformation import DataTransformationConfig
 from src.components.data_transformation import DataTransformation 
 
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
+
 
 @dataclass
 class DataIngestionConfig:
@@ -51,8 +54,16 @@ class DataIngestion:
             raise CustomException(e, sys)
 
 if __name__ == "__main__":
+    # Fetching and splitting the data
     obj = DataIngestion()
     train_path, test_path = obj.initiate_data_ingestion()
     
+    # Transforming the ingested data
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_path, test_path)
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_path, test_path)
+
+    #Training  the model on the transformed data
+    model_trainer = ModelTrainer()
+    best_model_name, best_model_score = model_trainer.initiate_model_trainer(train_arr, test_arr)
+
+    print(f"Best Model: {best_model_name} with R-squared score: {best_model_score}")
